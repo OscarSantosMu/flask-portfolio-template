@@ -2,7 +2,7 @@ import datetime
 
 from peewee import *
 
-from app import mydb
+from .. import mydb
 
 
 class TimelinePost(Model):
