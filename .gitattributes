@@ -1,1 +1,3 @@
 src/scripts/redeploy-site.sh eol=lf
+src/scripts/curl-test.sh eol=lf
+src/scripts/run_test.sh eol=lf
