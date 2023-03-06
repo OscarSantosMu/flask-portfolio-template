@@ -1,15 +1,14 @@
 import os
 import statistics
 import re
+import urllib, hashlib  # import code for encoding urls and generating md5 hashes
+
 import folium
 import requests
 from flask import render_template, url_for, request, redirect, flash, Response
 from playhouse.shortcuts import model_to_dict
 
-# import code for encoding urls and generating md5 hashes
-import urllib, hashlib
-
-from app import app
+from . import app
 from .models.experience import Experience
 from .models.education import Education
 from .models.hobbies import Hobbies
@@ -172,15 +171,23 @@ def folium_map():
 
 @app.route("/api/timeline_post", methods=["POST"])
 def post_time_line_post():
-    if ("name" in request.form and len(request.form['name']) == 0) or ("name" not in request.form ) :
-       
-        return  Response( response="Invalid name", status=400,  mimetype="text/html")
-    
-    elif ("email" in request.form and len(request.form['email']) == 0 or test_email(request.form['email']) == False ) or ("email" not in request.form ) :
-       
-        return  Response( response="Invalid email", status=400,  mimetype="text/html")
-    elif ("content" in request.form and len(request.form['content']) == 0) or ("content" not in request.form ) :
-        return  Response( response="Invalid content", status=400,  mimetype="text/html")    
+    if ("name" in request.form and len(request.form["name"]) == 0) or (
+        "name" not in request.form
+    ):
+
+        return Response(response="Invalid name", status=400, mimetype="text/html")
+
+    elif (
+        "email" in request.form
+        and len(request.form["email"]) == 0
+        or test_email(request.form["email"]) == False
+    ) or ("email" not in request.form):
+
+        return Response(response="Invalid email", status=400, mimetype="text/html")
+    elif ("content" in request.form and len(request.form["content"]) == 0) or (
+        "content" not in request.form
+    ):
+        return Response(response="Invalid content", status=400, mimetype="text/html")
     name = request.form["name"]
     email = request.form["email"]
     content = request.form["content"]
@@ -216,16 +223,16 @@ def timeline():
         name = request.form["name"]
         email = request.form["email"]
         content = request.form["content"]
-        endpoint = f"http://127.0.0.1:5000{url_for('post_time_line_post')}"
+        endpoint = url_for("post_time_line_post", _external=True)
         payload = dict(name=name, email=email, content=content)
         r = requests.post(endpoint, data=payload)
         if r.ok:
             flash("Your post has been created", "success")
         else:
-            return redirect(url_for("index"))
+            flash("There was an error submitting your post", "danger")
 
     # If no form has been submitted or the form has sent the info with success display the timeline
-    endpoint = f'http://127.0.0.1:5000{url_for("get_time_line_post")}'
+    endpoint = url_for("get_time_line_post", _external=True)
     r = requests.get(endpoint)
     if r.ok:
         timeline_posts = r.json()
@@ -234,17 +241,18 @@ def timeline():
             "timeline.html", title="Timeline", timeline_posts=timeline_posts
         )
     else:
-        return redirect(url_for("index"))
+        return render_template("timeline.html", title="Timeline", timeline_posts=[])
+
 
 def test_email(email):
-    pattern = re.compile( r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?")
+    pattern = re.compile(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?")
     if not re.match(pattern, email):
         return False
     return True
 
 
 # my pattern that is passed as argument in my function is here!
-  
+
 
 def create_map(locations):
 
