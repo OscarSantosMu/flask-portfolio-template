@@ -2,10 +2,20 @@ import os
 import statistics
 import re
 import urllib, hashlib  # import code for encoding urls and generating md5 hashes
+import tempfile
 
 import folium
 import requests
-from flask import render_template, url_for, request, redirect, flash, Response
+from flask import (
+    abort,
+    render_template,
+    send_from_directory,
+    url_for,
+    request,
+    redirect,
+    flash,
+    Response,
+)
 from playhouse.shortcuts import model_to_dict
 
 from . import app
@@ -152,7 +162,9 @@ def tourism(name):
     locations = []
     for location in data[name]["locations"]:
         locations.append(Locations(location["cityname"], location["coordinates"]))
-    create_map(locations)
+    map_file = create_map(locations)
+    map_url = url_for("folium_map", filename=os.path.basename(map_file))
+    # print(map_url)
     return render_template(
         "main.html",
         title="MLH Fellow",
@@ -160,13 +172,23 @@ def tourism(name):
         photoUrl=data[name]["photourl"],
         url=os.getenv("URL"),
         type="Map",
+        map_url=map_url,
         elements=[],
     )
 
 
-@app.route("/map")
-def folium_map():
-    return render_template("map.html")
+@app.route("/tmp/<path:filename>")
+def folium_map(filename):
+    file_path = os.path.join(tempfile.gettempdir(), filename)
+    directory = tempfile.gettempdir()
+    if os.path.isfile(file_path) and filename.endswith(".html"):
+        return send_from_directory(directory, filename)
+        # uncomment the following to delete temp files after rendering.
+        # return send_from_directory(directory, filename), os.remove(
+        #     os.path.join(directory, filename)
+        # )
+    else:
+        abort(404)
 
 
 @app.route("/api/timeline_post", methods=["POST"])
@@ -275,4 +297,6 @@ def create_map(locations):
             coordinates_str[i], popup=location.cityname, tooltip=tooltip
         ).add_to(m)
 
-    m.save("app/templates/map.html")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as map_file:
+        m.save(map_file.name)
+        return map_file.name
