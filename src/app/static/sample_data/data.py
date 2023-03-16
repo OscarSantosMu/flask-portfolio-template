@@ -11,6 +11,12 @@ data = {
         "photourl": "https://avatars.githubusercontent.com/u/38818848?s=400&u=5a7007b59164f33f774fce16c08ee73ce0e1cdb9&v=4",
         "experience": [
             {
+                "company": "MLH Fellowship - LATAM",
+                "position": "SRE Fellow",
+                "duration": "3 months",
+                "description": "Develop a portfolio project applying SRE techniques and tools.",
+            },
+            {
                 "company": "VISEO, SAS - Toulouse, France",
                 "position": "VISEO, SAS - Toulouse, France",
                 "duration": "6 months",
