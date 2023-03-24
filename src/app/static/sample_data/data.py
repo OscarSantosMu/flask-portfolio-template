@@ -84,6 +84,8 @@ data = {
             {"cityname": "Berlin, Germany", "coordinates": "52.520007,13.404954"},
             {"cityname": "Rome, Italy", "coordinates": "41.902784,12.496366"},
             {"cityname": "Brussels, Belgium", "coordinates": "50.847642,4.35717"},
+            {"cityname": "Bern, Switzerland", "coordinates": "46.947974,7.447447"},
+            {"cityname": "Vienna, Austria", "coordinates": "48.208174,16.373819"},
         ],
     },
     "Khalil Collins": {
