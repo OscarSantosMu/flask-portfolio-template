@@ -13,8 +13,15 @@ jobs:
   deploy:
     name: "Deploy to VPS"
     needs: test
-    if: success()
     runs-on: ubuntu-latest
+    continue-on-error: true
+    if: failure()
+    steps:
+      - name: Send a Discord Notification on Failure
+        run: >
+            curl -H "Content-Type: application/json" -X POST -d '{"content": "🚨 Deployment Failed due to error(s) in tests", "username": "Sylvester Stallone", "avatar_url": "https://i.imgur.com/aXsoEHR.jpeg"}' "${{ secrets.DISCORD_WEBHOOK }}"
+
+    if: success()
     steps:
       - name: Configure SSH
         run: |
@@ -35,6 +42,11 @@ jobs:
 
       - name: Deploy site
         run: ssh my-vps 'cd ${{ secrets.PROJECT_ROOT }}/src/scripts && chmod +x redeploy-site.sh && ./redeploy-site.sh'
+
+      - name: Send a Discord Notification on Failure
+        if: failure()
+        run: >
+            curl -H "Content-Type: application/json" -X POST -d '{"content": "🚨 Deployment Failed due to a problem in either ssh or redeploy-site.sh", "username": "Sylvester Stallone", "avatar_url": "https://i.imgur.com/aXsoEHR.jpeg"}' "${{ secrets.DISCORD_WEBHOOK }}"
 
       - name: Send a Discord Notification on Success
         if: success()
