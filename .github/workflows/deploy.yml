@@ -7,8 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
   deploy:
     name: "Deploy to VPS"
+    needs: test
+    if: success()
     runs-on: ubuntu-latest
     steps:
       - name: Configure SSH
@@ -33,4 +37,5 @@ jobs:
 
       - name: Send a Discord Notification on Success
         if: success()
-        run: curl -s -X POST "${{ secrets.DISCORD_WEBHOOK }}" -d "content=🚀 Deployment Successful"
+        run: >
+          curl -H "Content-Type: application/json" -X POST -d '{"content": "🚀 Deployment Successful", "username": "Arnold Schwarzenegger", "avatar_url": "https://i.imgur.com/fCFMcZf.jpeg"}' "${{ secrets.DISCORD_WEBHOOK }}"
