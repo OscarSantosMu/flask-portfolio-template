@@ -15,15 +15,15 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     continue-on-error: true
-    if: failure()
+    if: always()
     steps:
       - name: Send a Discord Notification on Test Failure
+        if: failure()
         run: >
             curl -H "Content-Type: application/json" -X POST -d '{"content": "🚨 Deployment Failed due to error(s) in tests", "username": "Sylvester Stallone", "avatar_url": "https://i.imgur.com/aXsoEHR.jpeg"}' "${{ secrets.DISCORD_WEBHOOK }}"
 
-    if: success()
-    steps:
       - name: Configure SSH
+        if: success()
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy-key.pem
@@ -41,6 +41,7 @@ jobs:
           SSH_IP: ${{ secrets.SSH_IP }}
 
       - name: Deploy site
+        if: success()
         run: ssh my-vps 'cd ${{ secrets.PROJECT_ROOT }}/src/scripts && chmod +x redeploy-site.sh && ./redeploy-site.sh'
 
       - name: Send a Discord Notification on Deployment Failure
