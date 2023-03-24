@@ -1,9 +1,6 @@
 import os
 import unittest
-import responses
-from unittest.mock import patch, MagicMock
-
-from flask import url_for
+from unittest.mock import patch
 
 os.environ["TESTING"] = "true"
 
