@@ -273,9 +273,6 @@ def test_email(email):
     return True
 
 
-# my pattern that is passed as argument in my function is here!
-
-
 def create_map(locations):
 
     # Convert the list of Locations to a list of coordinates
