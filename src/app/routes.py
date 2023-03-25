@@ -251,7 +251,7 @@ def timeline():
         if r.ok:
             flash("Your post has been created", "success")
         else:
-            flash("There was an error submitting your post", "danger")
+            flash("ifewfois", "danger")
 
     # If no form has been submitted or the form has sent the info with success display the timeline
     endpoint = url_for("get_time_line_post", _external=True)
