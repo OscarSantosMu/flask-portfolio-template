@@ -266,6 +266,16 @@ def timeline():
         return render_template("timeline.html", title="Timeline", timeline_posts=[])
 
 
+@app.route("/health")
+def health():
+
+    endpoint = url_for("get_time_line_post", _external=True)
+    r = requests.get(endpoint)
+    if r.ok:
+        timeline_posts = r.json()
+        return timeline_posts
+
+
 def test_email(email):
     pattern = re.compile(r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?")
     if not re.match(pattern, email):
